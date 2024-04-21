@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TrackRun</string>
     <string name="google_maps_key">***</string>
+    <string name="your_runs">Your Runs</string>
+    <string name="statistics">Statistics</string>
+    <string name="settings">Settings</string>
 </resources>
