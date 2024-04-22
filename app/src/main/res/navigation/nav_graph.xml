@@ -21,7 +21,7 @@
             app:destination="@id/runFragment" />
     </fragment>
     <fragment
-        android:id="@+id/statisticsFragment2"
+        android:id="@+id/statisticsFragment"
         android:name="com.example.trackrun.ui.fragments.StatisticsFragment"
         android:label="StatisticsFragment" />
     <fragment
@@ -33,7 +33,7 @@
             app:destination="@id/runFragment" />
     </fragment>
     <fragment
-        android:id="@+id/settingsFragment2"
+        android:id="@+id/settingsFragment"
         android:name="com.example.trackrun.ui.fragments.SettingsFragment"
         android:label="SettingsFragment" />
 </navigation>

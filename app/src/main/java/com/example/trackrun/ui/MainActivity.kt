@@ -7,6 +7,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.trackrun.R
 import com.example.trackrun.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,9 +23,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
         setSupportActionBar(binding.toolbar)
-        binding.bottomNavigationView.setupWithNavController(binding.navHostFragmentContainer.findNavController())
-        binding.navHostFragmentContainer.findNavController()
+        val navController = findNavController(R.id.navHostFragment)
+        findViewById<BottomNavigationView>(R.id.bottomNavigationView).setupWithNavController(navController)
+        findNavController(R.id.navHostFragment)
             .addOnDestinationChangedListener { _, destination, _ ->
                 when(destination.id) {
                     R.id.settingsFragment, R.id.runFragment, R.id.statisticsFragment ->

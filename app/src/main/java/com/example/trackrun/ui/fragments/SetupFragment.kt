@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.trackrun.R
-import com.example.trackrun.databinding.FragmentSettingsBinding
 import com.example.trackrun.databinding.FragmentSetupBinding
 
 class SetupFragment : Fragment(R.layout.fragment_setup) {
