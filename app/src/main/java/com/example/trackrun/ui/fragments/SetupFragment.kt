@@ -24,7 +24,7 @@ class SetupFragment : Fragment(R.layout.fragment_setup) {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvSetup.setOnClickListener {
+        binding.tvContinue.setOnClickListener {
             findNavController().navigate(R.id.action_setupFragment_to_runFragment)
         }
     }
