@@ -1,5 +1,6 @@
 package com.example.trackrun.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -7,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.trackrun.R
 import com.example.trackrun.databinding.ActivityMainBinding
+import com.example.trackrun.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,6 +21,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        navigateToTrackingFragmentIfNeeded(intent)
     }
 
     override fun onStart() {
@@ -35,5 +39,17 @@ class MainActivity : AppCompatActivity() {
                     else -> binding.bottomNavigationView.visibility = View.GONE
                 }
             }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navigateToTrackingFragmentIfNeeded(intent)
+    }
+
+    private fun navigateToTrackingFragmentIfNeeded(intent: Intent?) {
+        if (intent?.action == ACTION_SHOW_TRACKING_FRAGMENT) {
+            findNavController(R.id.navHostFragment)
+                .navigate(R.id.action_global_tracking_fragment)
+        }
     }
 }
