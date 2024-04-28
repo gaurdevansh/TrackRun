@@ -73,10 +73,12 @@ class TrackingService : LifecycleService() {
                         startForegroundService()
                         isFirstRun = false
                     } else {
-                        Timber.d("Resumed Service")
+                        Timber.d("Resume Service")
+                        startForegroundService()
                     }
                 }
                 ACTION_PAUSE_SERVICE -> {
+                    pauseService()
                     Timber.d("Paused Service")
                 }
                 ACTION_STOP_SERVICE -> {
@@ -119,6 +121,10 @@ class TrackingService : LifecycleService() {
                 }
             }
         }
+    }
+
+    private fun pauseService() {
+        isTracking.postValue(false)
     }
 
     private fun addPathPoint(location: Location?) {
