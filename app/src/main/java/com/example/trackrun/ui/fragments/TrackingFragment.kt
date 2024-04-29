@@ -15,6 +15,7 @@ import com.example.trackrun.other.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.example.trackrun.other.Constants.MAP_ZOOM
 import com.example.trackrun.other.Constants.POLYLINE_COLOR_RED
 import com.example.trackrun.other.Constants.POLYLINE_WIDTH
+import com.example.trackrun.other.TrackingUtility
 import com.example.trackrun.services.TrackingService
 import com.example.trackrun.ui.viewmodels.MainViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,6 +35,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     private var pathPoints = mutableListOf<MutableList<LatLng>>()
 
     private var map: GoogleMap? = null
+
+    private var currentTimeInMillis = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +69,12 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
+        })
+
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+            currentTimeInMillis = it
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(currentTimeInMillis, true)
+            binding.tvTimer.text = formattedTime
         })
     }
 
