@@ -50,7 +50,8 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
                 "You need to accept location permission to use this app",
                 REQUEST_CODE_LOCATION_PERMISSION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.POST_NOTIFICATIONS
             )
         } else {
             EasyPermissions.requestPermissions(
@@ -59,7 +60,8 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
                 REQUEST_CODE_LOCATION_PERMISSION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                android.Manifest.permission.POST_NOTIFICATIONS
             )
         }
     }
