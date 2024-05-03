@@ -2,16 +2,16 @@ package com.example.trackrun.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.trackrun.R
 import com.example.trackrun.databinding.FragmentTrackingBinding
 import com.example.trackrun.other.Constants.ACTION_PAUSE_SERVICE
 import com.example.trackrun.other.Constants.ACTION_START_OR_RESUME_SERVICE
+import com.example.trackrun.other.Constants.ACTION_STOP_SERVICE
 import com.example.trackrun.other.Constants.MAP_ZOOM
 import com.example.trackrun.other.Constants.POLYLINE_COLOR_RED
 import com.example.trackrun.other.Constants.POLYLINE_WIDTH
@@ -23,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,11 +39,14 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private var currentTimeInMillis = 0L
 
+    private var menu: Menu? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         binding = FragmentTrackingBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -80,6 +84,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private fun toggleRun() {
         if (isTracking) {
+            menu?.getItem(0)?.isVisible = true
             sendCommandToService(ACTION_PAUSE_SERVICE)
         } else {
             sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
@@ -92,6 +97,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             binding.btnToggleRun.text = "Start"
             binding.btnFinishRun.visibility = View.VISIBLE
         } else {
+            menu?.getItem(0)?.isVisible = true
             binding.btnToggleRun.text = "Stop"
             binding.btnFinishRun.visibility = View.GONE
         }
@@ -140,6 +146,48 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         binding.mapView?.onSaveInstanceState(outState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.toolbar_menu_tracking, menu)
+        this.menu = menu
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        if (currentTimeInMillis > 0) {
+            this.menu?.getItem(0)?.isVisible = true
+        }
+    }
+
+    private fun showCancelTrackingDialog() {
+        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
+            .setTitle("Cancel the Run?")
+            .setMessage("Are you sure to cancel the current run and delete all its date?")
+            .setIcon(R.drawable.ic_graph)
+            .setPositiveButton("Yes") { _, _ ->
+                stopRun()
+            }
+            .setNegativeButton("No") { dialogInterface, _ ->
+                dialogInterface.cancel()
+            }
+            .create()
+        dialog.show()
+    }
+
+    private fun stopRun() {
+        sendCommandToService(ACTION_STOP_SERVICE)
+        findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.miCancelTracking -> {
+                showCancelTrackingDialog()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {

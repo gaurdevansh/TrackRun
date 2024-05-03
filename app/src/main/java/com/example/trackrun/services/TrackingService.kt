@@ -64,6 +64,8 @@ class TrackingService : LifecycleService() {
     private var timeStarted = 0L
     private var lastSecondTimeStamp = 0L
 
+    private var serviceKilled = false
+
     companion object {
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polylines>()
@@ -77,7 +79,7 @@ class TrackingService : LifecycleService() {
         fusedLocationProviderClient = FusedLocationProviderClient(this)
 
         isTracking.observe(this, Observer {
-            updateLocationTracking(it)
+            updateNotificationTrackingState(it)
             updateLocationTracking(it)
         })
     }
@@ -107,6 +109,7 @@ class TrackingService : LifecycleService() {
                     Timber.d("Paused Service")
                 }
                 ACTION_STOP_SERVICE -> {
+                    killService()
                     Timber.d("Stop Service")
                 }
             }
@@ -126,9 +129,11 @@ class TrackingService : LifecycleService() {
         startForeground(NOTIFICATION_ID, baseNotificationBuilder.build())
 
         timeRunInSeconds.observe(this, Observer {
-            val notification = curNotificationBuilder
-                .setContentText(TrackingUtility.getFormattedStopWatchTime(it * 1000L))
-            notificationManager.notify(NOTIFICATION_ID, notification.build())
+            if (!serviceKilled) {
+                val notification = curNotificationBuilder
+                    .setContentText(TrackingUtility.getFormattedStopWatchTime(it * 1000L))
+                notificationManager.notify(NOTIFICATION_ID, notification.build())
+            }
         })
     }
 
@@ -200,6 +205,15 @@ class TrackingService : LifecycleService() {
         }
     }
 
+    private fun killService() {
+        serviceKilled = true
+        isFirstRun = true
+        pauseService()
+        postInitialValues()
+        stopForeground(true)
+        stopSelf()
+    }
+
     private fun updateNotificationTrackingState(isTracking: Boolean) {
         val notificationActionText = if (isTracking) "Pause" else "Resume"
         val pendingIntent = if (isTracking) {
@@ -220,9 +234,11 @@ class TrackingService : LifecycleService() {
             isAccessible = true
             set(curNotificationBuilder, ArrayList<NotificationCompat.Action>())
         }
-        curNotificationBuilder = baseNotificationBuilder
-            .addAction(R.drawable.ic_add_black, notificationActionText, pendingIntent)
-        notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
+        if (!serviceKilled) {
+            curNotificationBuilder = baseNotificationBuilder
+                .addAction(R.drawable.ic_add_black, notificationActionText, pendingIntent)
+            notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
+        }
     }
 
     private fun addEmptyPolyline() = pathPoints.value?.apply {
