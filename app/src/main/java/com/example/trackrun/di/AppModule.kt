@@ -23,7 +23,8 @@ object AppModule {
         app,
         RunningDatabase::class.java,
         RUNNING_DATABASE_NAME
-    ).build()
+    ).fallbackToDestructiveMigration()
+        .build()
 
     @Singleton
     @Provides
